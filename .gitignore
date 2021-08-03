@@ -1,6 +1,12 @@
 ### Pycharm
 .idea
 
+### vscode
+.vscode
+
+### Large data file
+data/*
+
 ### Python template
 # Byte-compiled / optimized / DLL files
 __pycache__/

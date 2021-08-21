@@ -1,6 +1,10 @@
 ### Pycharm
 .idea
 
+data/raw/*
+data/procossed/*
+data/external/*
+
 ### vscode
 .vscode
 

@@ -2,7 +2,7 @@
 .idea
 
 data/raw/*
-data/procossed/*
+data/processed/*
 data/external/*
 
 ### vscode

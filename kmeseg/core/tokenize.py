@@ -4,8 +4,7 @@ import numpy as np
 import requests
 import tensorflow as tf
 import tensorflow.keras as tfk
-
-from config import word_segmentation_model_url
+from kmeseg.utils.config import LOOK_BACK, word_segmentation_model_url
 
 
 class Segmentation:
@@ -21,30 +20,7 @@ class Segmentation:
         self.model = tfk.models.load_model("my_model.hdf5")
         os.remove("my_model.hdf5")
 
-        self.look_back = 5
-
-    def create_dataset(self, text):
-        """
-        take text with label (text that being defined where to cut ('|'))
-        and encode text and make label
-        return preprocessed text & preprocessed label
-        """
-        X, y = [], []
-        text = "|" + text
-        data = [self.CHAR_INDICES["<pad>"]] * self.look_back
-        for i in range(1, len(text)):
-            current_char = text[i]
-            before_char = text[i - 1]
-
-            if current_char == "|":
-                continue
-            data = data[1:] + [self.CHAR_INDICES[current_char]]  # X data
-
-            target = 1 if before_char == "|" else 0  # y data
-            X.append(data)
-            y.append(target)
-
-        return np.array(X), tf.one_hot(y, 2)
+        self.LOOK_BACK = LOOK_BACK
 
     def preprocessing_text(self, raw_text):
         """
@@ -53,7 +29,7 @@ class Segmentation:
         return preprocessed text
         """
         X = []
-        data = [self.CHAR_INDICES["<pad>"]] * self.look_back
+        data = [self.CHAR_INDICES["<pad>"]] * self.LOOK_BACK
         for char in raw_text:
             char = (
                 char if char in self.CHAR_INDICES else "<unk>"

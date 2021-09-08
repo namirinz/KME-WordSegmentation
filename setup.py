@@ -2,6 +2,6 @@ from setuptools import setup
 from setuptools import find_packages
 
 setup(
-    name='KME-Wordsegmentation',
+    name='kmeseg',
     packages=find_packages()
 )

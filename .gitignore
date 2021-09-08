@@ -1,6 +1,10 @@
 ### Pycharm
 .idea
 
+### Model
+models/logs/*
+models/save_model/*
+
 ### vscode
 .vscode
 
@@ -12,6 +16,8 @@ data/*
 __pycache__/
 *.py[cod]
 *$py.class
+test.py
+test.ipynb
 
 # C extensions
 *.so

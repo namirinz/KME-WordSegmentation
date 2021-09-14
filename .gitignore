@@ -1,6 +1,9 @@
 ### Pycharm
 .idea
 
+
+*.log
+
 ### Model
 models/logs/*
 models/save_model/*

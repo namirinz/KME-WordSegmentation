@@ -12,7 +12,7 @@ def create_model():
                 layers.GRU(32, return_sequences=False), merge_mode="sum"
             ),
             layers.Dropout(0.4),
-            layers.Dense(2, activation="softmax"),
+            layers.Dense(1, activation="sigmoid"),
         ]
     )
 
@@ -23,7 +23,7 @@ def compile_model(model, optimizer, learning_rate):
     opt = f"tfk.optimizers.{optimizer}(learning_rate={learning_rate})"
     model.compile(
         optimizer=eval(opt),
-        loss=tfk.losses.CategoricalCrossentropy(),
+        loss=tfk.losses.BinaryCrossentropy(),
         metrics=["accuracy"],
     )
 

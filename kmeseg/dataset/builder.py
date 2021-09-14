@@ -11,7 +11,7 @@ def create_dataset(text: str) -> np.ndarray:
     and encode text and make label
     return preprocessed text & preprocessed label
     """
-    X, y = [], []
+    samples, labels = [], []
     text = "|" + text
     data = [CHAR_INDICES["<pad>"]] * LOOK_BACK
     for i in range(1, len(text)):
@@ -23,10 +23,10 @@ def create_dataset(text: str) -> np.ndarray:
         data = data[1:] + [CHAR_INDICES[current_char]]  # X data
 
         target = 1 if before_char == "|" else 0  # y data
-        X.append(data)
-        y.append(target)
+        samples.append(data)
+        labels.append(target)
 
-    return np.array(X), tf.one_hot(y, 2)
+    return np.array(samples), np.array(labels)
 
 
 def prepare_dataset(arr_label):
@@ -65,6 +65,8 @@ def build_dataset(
 
     samples, label = create_dataset(iupaccut)
 
-    dataset = create_tf_dataset(samples, label, buffer_size, batch_size, use_cache)
+    dataset = create_tf_dataset(
+        samples, label, buffer_size, batch_size, use_cache
+    )
 
     return dataset

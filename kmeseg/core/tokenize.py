@@ -91,7 +91,9 @@ class Tokenizer:
             segmented_text, _ = self.kme_segment.word_segmentation(sentence)
 
             # Add <start> at start and <end> at end of each sentences
-            segmented_text = np.concatenate((["<start>"], segmented_text, ["<end>"]))
+            segmented_text = np.concatenate(
+                (["<start>"], segmented_text, ["<end>"])
+            )
 
             for word in segmented_text:
                 self.add_word(word)

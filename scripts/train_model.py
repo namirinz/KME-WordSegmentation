@@ -1,12 +1,7 @@
 import os
-
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
-import sys
 from argparse import ArgumentParser
 from typing import List
 
-import numpy as np
 import pandas as pd
 import tensorflow as tf
 import tensorflow.keras as tfk
@@ -14,7 +9,7 @@ from kmeseg.core.model import compile_model, create_callbacks, create_model
 from kmeseg.dataset.builder import build_dataset
 from kmeseg.utils.setting import setup_gpu, setup_path
 
-
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 PROJECT_PATH, DATA_PATH = setup_path()
 
 
@@ -41,6 +36,7 @@ def parse_args():
 
 
 def get_dataset(buffer_size, batch_size, use_cache):
+    print("---- Getting Dataset ----")
     dataframe_path = os.path.join(DATA_PATH, "processed")
     df_train = pd.read_csv(f"{dataframe_path}/train/df_train.csv")
     df_val = pd.read_csv(f"{dataframe_path}/val/df_val.csv")
@@ -69,6 +65,7 @@ def get_dataset(buffer_size, batch_size, use_cache):
         batch_size=batch_size,
         use_cache=use_cache,
     )
+    print("---- Getting Dataset Successful ----")
 
     return dataset, validation_dataset, testing_dataset
 
@@ -92,7 +89,9 @@ def train(
     print("---- Training Model Successful ----")
 
 
-def evaluate(testing_dataset: tf.data.Dataset, model: tfk.Model, batch_size: int):
+def evaluate(
+    testing_dataset: tf.data.Dataset, model: tfk.Model, batch_size: int
+):
     print("---- Evaluating Model ----")
     model.evaluate(testing_dataset, batch_size=batch_size)
     print("---- Evaluating Model Successful ----")
@@ -104,8 +103,20 @@ def main():
 
     setup_gpu(args.gpu_ids)
 
-    model = create_model()
-    compile_model(model, optimizer=args.optimizer, learning_rate=args.learning_rate)
+    if len(args.gpu_ids) > 1:
+        strategy = tf.distribute.MirroredStrategy()
+        num_devices = strategy.num_replicas_in_sync
+        with strategy.scope():
+            model = create_model()
+        BATCH_SIZE = BATCH_SIZE * num_devices
+        print(f"Number of devices: {num_devices}")
+    else:
+        print(f"Number of devices: 1")
+        model = create_model()
+
+    compile_model(
+        model, optimizer=args.optimizer, learning_rate=args.learning_rate
+    )
 
     callback_list = create_callbacks(
         modelpath=f"{PROJECT_PATH}/models/save_model/{args.model_name}",
@@ -115,7 +126,9 @@ def main():
     )
 
     dataset, validation_dataset, testing_dataset = get_dataset(
-        buffer_size=args.buffer_size, batch_size=BATCH_SIZE, use_cache=args.use_cache
+        buffer_size=args.buffer_size,
+        batch_size=BATCH_SIZE,
+        use_cache=args.use_cache,
     )
     train(
         dataset=dataset,

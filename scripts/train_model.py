@@ -40,7 +40,6 @@ def get_dataset(buffer_size, batch_size, use_cache):
     dataframe_path = os.path.join(DATA_PATH, "processed")
     df_train = pd.read_csv(f"{dataframe_path}/train/df_train.csv")
     df_val = pd.read_csv(f"{dataframe_path}/val/df_val.csv")
-    df_test = pd.read_csv(f"{dataframe_path}/test/df_test.csv")
 
     dataset = build_dataset(
         df=df_train,
@@ -58,16 +57,9 @@ def get_dataset(buffer_size, batch_size, use_cache):
         use_cache=use_cache,
     )
 
-    testing_dataset = build_dataset(
-        df=df_test,
-        label_col="label",
-        buffer_size=buffer_size,
-        batch_size=batch_size,
-        use_cache=use_cache,
-    )
     print("---- Getting Dataset Successful ----")
 
-    return dataset, validation_dataset, testing_dataset
+    return dataset, validation_dataset
 
 
 def train(
@@ -125,7 +117,7 @@ def main():
         use_tensorboard=args.use_tensorboard,
     )
 
-    dataset, validation_dataset, testing_dataset = get_dataset(
+    dataset, validation_dataset = get_dataset(
         buffer_size=args.buffer_size,
         batch_size=BATCH_SIZE,
         use_cache=args.use_cache,

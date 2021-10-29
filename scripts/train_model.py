@@ -15,20 +15,69 @@ PROJECT_PATH, DATA_PATH = setup_path()
 
 def parse_args():
     parser = ArgumentParser()
-    parser.add_argument("--gpu-ids", nargs="+", default=["0"])
-    parser.add_argument("--samples", type=int, default=-1)
+    parser.add_argument(
+        "--gpu-ids",
+        nargs="+",
+        default=["0"],
+        help="Select id you want to use.",
+    )
+    parser.add_argument(
+        "--samples",
+        type=int,
+        default=-1,
+        help="Number of sample to use.",
+    )
     parser.add_argument("--buffer-size", type=int, default=1000)
-    parser.add_argument("-b", "--batch-size", type=int, default=32)
-    parser.add_argument("-e", "--epochs", type=int, default=10)
-    parser.add_argument("--optimizer", type=str, default="Adam")
-    parser.add_argument("-lr", "--learning-rate", type=float, default=1e-4)
+    parser.add_argument(
+        "-b",
+        "--batch-size",
+        type=int,
+        default=64,
+        help="Select batch size.",
+    )
+    parser.add_argument(
+        "-e", "--epochs", type=int, default=10, help="Number of epochs."
+    )
+    parser.add_argument(
+        "--optimizer", type=str, default="Adam", help="Model optimizer."
+    )
+    parser.add_argument(
+        "-lr",
+        "--learning-rate",
+        type=float,
+        default=1e-4,
+        help="Starting Learning Rate.",
+    )
     parser.add_argument("--model-name", type=str, default="kmeseg_model.h5")
-    parser.add_argument("--escb-patience", type=int, default=5)
-    parser.add_argument("--min-delta", type=float, default=0.01)
-    parser.add_argument("--rlcb-patience", type=int, default=3)
-    parser.add_argument("--use-tensorboard", type=bool, default=False)
-    parser.add_argument("--use-cache", type=bool, default=False)
-    parser.add_argument("--visualize", type=bool, default=True)
+    parser.add_argument(
+        "--escb-patience", type=int, default=5, help="Early Stopping patience."
+    )
+    parser.add_argument(
+        "--min-delta",
+        type=float,
+        default=0.01,
+        help="Minimum difference loss between epoch to be stop.",
+    )
+    parser.add_argument(
+        "--rlcb-patience",
+        type=int,
+        default=3,
+    )
+    parser.add_argument(
+        "--use-tensorboard",
+        type=bool,
+        default=False,
+        help="Whether to using Tensorboard.",
+    )
+    parser.add_argument(
+        "--use-cache", type=bool, default=False, help="Whether to use cache."
+    )
+    parser.add_argument(
+        "--visualize",
+        type=bool,
+        default=True,
+        help="Whether to visualize the training loss.",
+    )
 
     args = parser.parse_args()
 

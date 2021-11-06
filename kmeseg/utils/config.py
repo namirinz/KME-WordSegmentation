@@ -75,6 +75,6 @@ CHAR_INDICES = {
 }
 CHAR_INDICES_SIZE = len(CHAR_INDICES)
 
-word_segmentation_model_url = "https://firebasestorage.googleapis.com/v0/b/ysc-kme-25095.appspot.com/o/best_model.hdf5?alt=media&token=124965a7-56ae-43c8-ac90-b99220dde13d"
+word_segmentation_model_url = "https://firebasestorage.googleapis.com/v0/b/kme-ai.appspot.com/o/kmeseg_model.h5?alt=media&token=634a75c4-309b-4736-840e-d6f937a1d8ac"
 
 LOOK_BACK = 10

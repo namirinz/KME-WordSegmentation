@@ -1,2 +1,2 @@
-from kmeseg.api import tokenize
-from kmeseg.api.tokenize import Tokenizer
+from kmeseg.apis import tokenize
+from kmeseg.apis.tokenize import Tokenizer

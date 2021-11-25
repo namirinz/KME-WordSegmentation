@@ -55,11 +55,14 @@ def create_tf_dataset(
 def build_dataset(
     df: pd.DataFrame,
     label_col: str,
+    n_samples: int,
     buffer_size: int = 1000,
     batch_size: int = 32,
     use_cache: bool = True,
 ) -> tf.data.Dataset:
-    iupaccut = df[label_col].values
+    iupaccut = df[label_col].iloc[:n_samples].values
+    
+    print(f"Selecting {len(iupaccut)} samples.")
 
     iupaccut = prepare_dataset(iupaccut)
 

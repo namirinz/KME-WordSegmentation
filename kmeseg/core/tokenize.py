@@ -1,25 +1,18 @@
+import json
 import os
 
 import numpy as np
-import requests
 import tensorflow as tf
-import tensorflow.keras as tfk
-from kmeseg.utils.config import LOOK_BACK, word_segmentation_model_url
+from kmeseg.utils.config import CHAR_INDICES, LOOK_BACK
+from kmeseg.utils.setting import setup_path
 
 
+PROJECT_DIR, _ = setup_path()
+MODEL_DIR = os.path.join(PROJECT_DIR, "models", "save_model")
 class Segmentation:
     def __init__(self):
-        word_segment_url = word_segmentation_model_url
-        response = requests.get(word_segment_url, allow_redirects=True)
-        with open("my_model.hdf5", "wb") as f_hdf5, requests.Session() as req:
-            f_hdf5.write(response.content)
-
-            resp = req.get(word_segmentation_model_url)
-            self.CHAR_INDICES = resp.json()
-
-        self.model = tfk.models.load_model("my_model.hdf5")
-        os.remove("my_model.hdf5")
-
+        self.model = tf.keras.models.load_model(os.path.join(MODEL_DIR, "kmeseg_model.h5"))
+        self.CHAR_INDICES = CHAR_INDICES
         self.LOOK_BACK = LOOK_BACK
 
     def preprocessing_text(self, raw_text):

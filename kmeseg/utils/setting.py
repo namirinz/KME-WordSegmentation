@@ -11,7 +11,7 @@ def setup_path():
     return project_dir, data_dir
 
 
-def setup_gpu(gpu_ids: List[str]):
+def setup_gpu(gpu_ids: List[str], local_rank: int) -> None:
     print("----- Setting GPU -----")
 
     os.environ["CUDA_VISIBLE_DEVICES"] = ",".join(gpu_ids)
@@ -20,5 +20,10 @@ def setup_gpu(gpu_ids: List[str]):
     for gpu in gpus:
         tf.config.experimental.set_memory_growth(gpu, True)
         print(f"{gpu.name} initialized.")
+
+    if gpus:
+        tf.config.experimental.set_visible_devices(
+            gpus[local_rank], "GPU"
+        )
 
     print("-----------------------")

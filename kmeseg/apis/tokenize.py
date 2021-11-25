@@ -1,28 +1,24 @@
 import json
+from typing import List
 
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.utils import get_file
 from tqdm import tqdm
 
+MODEL_URL = "https://firebasestorage.googleapis.com/v0/b/kme-ai.appspot.com/o/kmeseg_model.h5?alt=media&token=cee8748a-af14-4991-9374-a8848d0fa81c"
+CHAR_URL = "https://firebasestorage.googleapis.com/v0/b/kme-ai.appspot.com/o/char_indices.json?alt=media&token=ce5af473-ccb3-4fcb-bd80-1c1cefab6fa4"
 
-MODEL_URL = 'https://firebasestorage.googleapis.com/v0/b/kme-ai.appspot.com/o/kmeseg_model.h5?alt=media&token=634a75c4-309b-4736-840e-d6f937a1d8ac'
-CHAR_URL = 'https://firebasestorage.googleapis.com/v0/b/kme-ai.appspot.com/o/char_indices.json?alt=media&token=ce5af473-ccb3-4fcb-bd80-1c1cefab6fa4'
 
-class Segmentation():
+class Segmentation:
     def __init__(self):
         model_path = get_file(
-            fname='my_model.hdf5',
-            origin=MODEL_URL,
-            cache_subdir='model'
+            fname="my_model.hdf5", origin=MODEL_URL, cache_subdir="model"
         )
 
-        char_path = get_file(
-            fname='char_indices.json',
-            origin=CHAR_URL
-        )
+        char_path = get_file(fname="char_indices.json", origin=CHAR_URL)
 
-        with open(char_path, 'r') as f:
+        with open(char_path, "r") as f:
             self.CHAR_INDICES = json.load(f)
 
         self.model = tf.keras.models.load_model(model_path, compile=False)
@@ -40,9 +36,9 @@ class Segmentation():
             numpy array: preprocessing text.
         """
         X = []
-        data = [self.CHAR_INDICES['<pad>']] * self.look_back
+        data = [self.CHAR_INDICES["<pad>"]] * self.look_back
         for char in raw_text:
-            char = char if char in self.CHAR_INDICES else '<unk>'
+            char = char if char in self.CHAR_INDICES else "<unk>"
             data = data[1:] + [self.CHAR_INDICES[char]]
             X.append(data)
         return np.array(X)
@@ -70,9 +66,12 @@ class Segmentation():
         class_ = np.append(class_, 1)
 
         cut_index = [i for i, value in enumerate(class_) if value == 1]
-        words = [text[cut_index[i]:cut_index[i+1]] for i in range(len(cut_index)-1)]
+        words = [
+            text[cut_index[i] : cut_index[i + 1]]
+            for i in range(len(cut_index) - 1)
+        ]
 
-        join_word = '|'.join(words)
+        join_word = "|".join(words)
 
         return words, join_word
 
@@ -100,23 +99,21 @@ class Tokenizer:
             # Word exists; increase word count
             self.word2count[word] += 1
 
-    def fit_on_texts(self, sentences):
+    def fit_on_texts(self, sentences: List[str]):
+        """Adding data informattion to the tokenizer
+
+        Args:
+            sentences (List[str]):
         """
-        Generated bag of words from sentences.
-
-        *No Return*
-
-        Parameters:
-            sentences (array of str) : text to fit on Tokenizer.
-        """
-
         for sentence in tqdm(sentences):
 
-            # Model predict 
+            # Model predict
             segmented_text, _ = self.kme_segment.word_segmentation(sentence)
 
             # Add <start> at start and <end> at end of each sentences
-            segmented_text = np.concatenate((['<start>'], segmented_text, ['<end>']))
+            segmented_text = np.concatenate(
+                (["<start>"], segmented_text, ["<end>"])
+            )
 
             if len(segmented_text) > self.longest_sentences:
                 self.longest_sentences = len(segmented_text)
@@ -124,8 +121,7 @@ class Tokenizer:
             for word in segmented_text:
                 self.add_word(word)
 
-
-    def text_to_sequences(self, sentences, method_pad='post', add_soe=False):
+    def text_to_sequences(self, sentences, method_pad="post", add_soe=False):
         """
         Preprocessing text into sequences (number) to be usable.
 
@@ -141,7 +137,7 @@ class Tokenizer:
         sequences_arr = []
         for sentence in tqdm(sentences):
 
-            # Model predict 
+            # Model predict
             segmented_text, _ = self.kme_segment.word_segmentation(sentence)
             tokenize_text_arr = []
 
@@ -150,10 +146,10 @@ class Tokenizer:
                     tokenize_text_arr.append(self.word2index[word])
                 except KeyError:
 
-                    # use <unk> key for word that never met 
-                    tokenize_text_arr.append(self.word2index['<unk>'])
+                    # use <unk> key for word that never met
+                    tokenize_text_arr.append(self.word2index["<unk>"])
 
-            tokenize_text_arr = np.concatenate(([1], tokenize_text_arr, [2]))        
+            tokenize_text_arr = np.concatenate(([1], tokenize_text_arr, [2]))
 
             sequences_arr.append(tokenize_text_arr)
 
